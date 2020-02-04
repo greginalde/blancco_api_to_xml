@@ -54,7 +54,7 @@ def reformat_xml(xml_data):
                     element.tag = tag_name
                     element.attrib.pop('name')
                 except Exception as ex:
-                    print('Failed to write tag. {}'.format(ex.message))
+                    print('Failed to write tag')
                 if 'type' in element.attrib:
                     element.attrib.pop('type')
         
@@ -222,7 +222,6 @@ def main():
                 df = pd.DataFrame(reports)
 
                 # Data pipeline
-
                 log('Result files write started')
                 write_data_files(df)
                 log('Result files write ended')
