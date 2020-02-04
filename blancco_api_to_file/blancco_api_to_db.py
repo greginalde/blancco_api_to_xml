@@ -221,7 +221,7 @@ def main():
                 
                 df = pd.DataFrame(reports)
 
-                # Data pipeline
+                # Results file creation
                 log('Result files write started')
                 write_data_files(df)
                 log('Result files write ended')
