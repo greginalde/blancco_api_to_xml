@@ -160,11 +160,8 @@ def get_parms():
     
     control = json.load(open(control_file_path, 'r'))
 
-    from_date = datetime.strptime(control['to_date'][:19], '%Y-%m-%d %H:%M:%S')
-    to_date = from_date + timedelta(hours=1)
-
-    if to_date > datetime.utcnow():
-        to_date = from_date
+    from_date = datetime.strptime(control['from_date'][:19], '%Y-%m-%d %H:%M:%S')
+    to_date = datetime.strptime(control['to_date'][:19], '%Y-%m-%d %H:%M:%S')
 
     blancco_url = control['blancco_url']
     blancco_username = control['blancco_username']
