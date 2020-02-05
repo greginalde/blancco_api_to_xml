@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<DATAWIPE>
+<UNIT>
+  <erasure.timestamp>2020-01-10T10:52:06+0900</erasure.timestamp>
+  <erasure.start_time>2020-01-10 10:52:06</erasure.start_time>
+  <erasure.end_time>2020-01-10 10:58:47</erasure.end_time>
+  <erasure.elapsed_time>00:06:40</erasure.elapsed_time>
+  <erasure.erasure_standard_name>Apple iOS erasure</erasure.erasure_standard_name>
+  <erasure.state>Successful</erasure.state>
+  <erasure.target.type>Internal memory</erasure.target.type>
+  <erasure.target.capacity>16000000000</erasure.target.capacity>
+  <erasure.target.serial>IMEI:353314074717628</erasure.target.serial>
+  <erasure.target.vendor>None</erasure.target.vendor>
+  <description.document_id>8b107935-e583-4aa8-b8d7-b37fa6dd1396</description.document_id>
+  <description.document_log.log_entry.author.product_name>Blancco 5 Mobile</description.document_log.log_entry.author.product_name>
+  <description.document_log.log_entry.author.product_version>3.11</description.document_log.log_entry.author.product_version>
+  <description.document_log.log_entry.author.product_revision>3.11</description.document_log.log_entry.author.product_revision>
+  <description.document_log.log_entry.date>2020-01-10T02:03:19+0000</description.document_log.log_entry.date>
+  <description.document_log.log_entry.integrity>r2L0YTHT2aEgKSS4uNkVMvWx9BvNs+LcFU09+FDjPaz+IBXRZj8OH61zXq7prp8uA+DGQ7k5JREyb9S2udxrxYJcA+o8AZkoKO2h73Rir/4+QQmKhOJxALX+Aa2Bue35I4C7np6QqFOPX/7/81M7hIIHKhoW7uhZVR1DHA/rqIG+g8EdE+QDZRPkS3zhx50xLsi8xRi1tykbg/zSHv/x7m7UXwYA+01ANghHBb+7GvDNWg+XgYSjMxsfKgxLEmsejHGr57MCRB2H9igkbg7eATJ5CHf7qS9yCoFkwqX6B2tQJGndboDgpi6Nn0Cr2NIwfBgpSq6YBkkTkTWrwcxA4g==</description.document_log.log_entry.integrity>
+  <description.document_log.log_entry.key>None</description.document_log.log_entry.key>
+  <description.description_entries.verified>true</description.description_entries.verified>
+  <hardware.system.manufacturer>Apple, Inc.</hardware.system.manufacturer>
+  <hardware.system.name>iPhone 6S GSM+CDMA 16GB Rose Gold</hardware.system.name>
+  <hardware.system.market_name>iPhone 6S</hardware.system.market_name>
+  <hardware.system.model>iPhone 6S GSM+CDMA 16GB Rose Gold</hardware.system.model>
+  <hardware.system.ram>2GB</hardware.system.ram>
+  <hardware.system.device_color>Rose Gold</hardware.system.device_color>
+  <hardware.system.identifier>IMEI:353314074717628</hardware.system.identifier>
+  <hardware.system.meid>35331407471762</hardware.system.meid>
+  <hardware.system.meid_fourteen>35331407471762</hardware.system.meid_fourteen>
+  <hardware.system.imei>353314074717628</hardware.system.imei>
+  <hardware.system.serial>F4HQJLLCGRY8</hardware.system.serial>
+  <hardware.system.internal_model>MKQM2</hardware.system.internal_model>
+  <hardware.system.a_model_number>A1688</hardware.system.a_model_number>
+  <hardware.system.region>J/A</hardware.system.region>
+  <hardware.system.uuid>7b860b4722f402de9f585638c3fb227fd635a981</hardware.system.uuid>
+  <hardware.system.wifi_mac>44:00:10:bf:4c:eb</hardware.system.wifi_mac>
+  <hardware.system.ecid>001E48DC04401DBA</hardware.system.ecid>
+  <hardware.system.chassis_type>Mobile Device</hardware.system.chassis_type>
+  <hardware.system.find_my_iphone>Unlocked</hardware.system.find_my_iphone>
+  <hardware.system.find_my_iphone_source>Activation Lock</hardware.system.find_my_iphone_source>
+  <hardware.system.mdm_status>Unknown</hardware.system.mdm_status>
+  <hardware.mobile_battery.battery_serial>F5D5406412XG5NYA7</hardware.mobile_battery.battery_serial>
+  <hardware.mobile_battery.battery_vendor>F</hardware.mobile_battery.battery_vendor>
+  <hardware.mobile_battery.battery_cycles>2</hardware.mobile_battery.battery_cycles>
+  <hardware.mobile_battery.battery_capacity_design>1690</hardware.mobile_battery.battery_capacity_design>
+  <hardware.mobile_battery.battery_capacity_current>1719</hardware.mobile_battery.battery_capacity_current>
+  <hardware.mobile_battery.battery_capacity_wear_level>0</hardware.mobile_battery.battery_capacity_wear_level>
+  <hardware.mobile_battery.battery_capacity_health_level>100</hardware.mobile_battery.battery_capacity_health_level>
+  <hardware.mobile_battery.battery_temperature>29</hardware.mobile_battery.battery_temperature>
+  <hardware.mobile_battery.battery_health_metric>199</hardware.mobile_battery.battery_health_metric>
+  <hardware.mobile_battery.battery_chemical_weighted_ra>199</hardware.mobile_battery.battery_chemical_weighted_ra>
+  <disk.type>Internal memory</disk.type>
+  <disk.serial>IMEI:353314074717628</disk.serial>
+  <disk.capacity>16000000000</disk.capacity>
+  <disk.vendor>None</disk.vendor>
+  <software.operating_system.name>iOS</software.operating_system.name>
+  <software.operating_system.version>13.3</software.operating_system.version>
+  <user_data.fields.comments>None</user_data.fields.comments>
+  <user_data.fields.r_location>ATK</user_data.fields.r_location>
+  <user_data.fields.r_place>Shizutani_ATK</user_data.fields.r_place>
+  <user_data.fields.r_region>Asia</user_data.fields.r_region>
+  <user_data.fields.r_country>Japan</user_data.fields.r_country>
+  <user_data.fields.r_process>UAT</user_data.fields.r_process>
+  <user_data.fields.r_workstation>JKGADM001089D</user_data.fields.r_workstation>
+  <user_data.fields.r_daxlink>1</user_data.fields.r_daxlink>
+</UNIT>
+</DATAWIPE>
