@@ -8,9 +8,9 @@ import requests
 import urllib3
 import sys
 from lxml import etree
+from lxml import etree as et
 from collections import OrderedDict
 from datetime import date, datetime, timedelta
-
 
 class DateTimeEncoder(json.JSONEncoder):
 
@@ -93,21 +93,22 @@ def parse_report(xml_data):
 
     return erasures
 
-def call_blancco_api(api_url, api_user, api_password, from_date, to_date):
+def call_blancco_api(api_url, api_user, api_password, report_date, report_location, report_place):
     
     try:
         
-        log('API get requested for dates: {} - {}'.format(from_date.isoformat(sep=' '), to_date.isoformat(sep=' ')))
+        log('API get requested for date: {}'.format(report_date.isoformat(sep=' ')))
         
         xml_request = u"""<?xml version="1.0" encoding="UTF-8"?>
                 <request>
                     <export-report>
-                        <report mode="original"/>
-                        <search path="report.report_date" value="{}" operator="gte" datatype="date" conjunction="true" />
-                        <search path="report.report_date" value="{}" operator="lt" datatype="date" conjunction="true" />
+                        <report mode="original" />
+                        <search path="report.report_date" value="{}" operator="gt" datatype="date" conjunction="true" />
+                        <search path="user_data.fields.r_location" value="{}" operator="eq" datatype="string" conjunction="true" />
+                        <search path="user_data.fields.r_place" value="{}" operator="eq" datatype="string" conjunction="true" />
                     </export-report>
                 </request>
-                """.format(from_date, to_date)
+                """.format(report_date, report_location, report_place)
 
         files = {'xmlRequest': io.StringIO(xml_request)}
         
@@ -119,7 +120,7 @@ def call_blancco_api(api_url, api_user, api_password, from_date, to_date):
             log('Successful response from API')
             return response.text
         else:
-            if response.text.find('No reports found') > 0:
+            if response.status_code == 400:
                 return None
             else:
                 log('Blancco API Request Status: {}; Message: {}'.format(response.status_code, response.text))
@@ -144,6 +145,25 @@ def write_data_files(df):
             if df[col].dtype == 'object':
                 df[col] = df[col].str[:4000]
 
+        def func(row):
+            
+            xml = ['<?xml version="1.0" encoding="UTF-8" ?>']
+            xml.append('<DATAWIPE>')
+            xml.append('<UNIT>')
+            
+            for field in row.index:
+                xml.append('  <{0}>{1}</{2}>'.format(field, row[field], field))
+            
+            xml.append('</UNIT>')
+            xml.append('</DATAWIPE>')
+            
+            return '\n'.join(xml)
+
+        finalxml = '\n'.join(df.apply(func, axis=1))
+        f =  open("datawiperesult.xml", "w")
+        f.write(finalxml)
+        f.close()
+
     except Exception as ex:
         raise ex
 
@@ -160,23 +180,23 @@ def get_parms():
     
     control = json.load(open(control_file_path, 'r'))
 
-    from_date = datetime.strptime(control['from_date'][:19], '%Y-%m-%d %H:%M:%S')
-    to_date = datetime.strptime(control['to_date'][:19], '%Y-%m-%d %H:%M:%S')
-
     blancco_url = control['blancco_url']
     blancco_username = control['blancco_username']
     blancco_password = control['blancco_password']
     results_path = control['results_path']
+    report_date = datetime.strptime(control['report_date'][:19], '%Y-%m-%d %H:%M:%S')
+    report_location = control['report_location']
+    report_place = control['report_place']
 
     return {
-        'from_date': from_date,
-        'to_date': to_date,
         'blancco_url': blancco_url,
         'blancco_username': blancco_username,
         'blancco_password': blancco_password,
-        'results_path': results_path
+        'results_path': results_path,
+        'report_date': report_date,
+        'report_location': report_location,
+        'report_place': report_place
     }
-
 
 def get_control_file_path():
     script_folder = os.path.dirname(os.path.realpath(__file__))
@@ -192,43 +212,42 @@ def main():
     try:
         
         executeParms = get_parms()
+           
+        api_url = executeParms['blancco_url']
+        api_user = executeParms['blancco_username']
+        api_password = executeParms['blancco_password']
+        report_date = executeParms['report_date']
+        report_location = executeParms['report_location']
+        report_place =executeParms['report_place']
 
-        if executeParms['to_date'] == executeParms['from_date']:
-            log('Nothing to process')
-
-        while executeParms['to_date'] != executeParms['from_date']:
+        xml = call_blancco_api(api_url, api_user, api_password, report_date, report_location, report_place)
             
-            api_url = executeParms['blancco_url']
-            api_user = executeParms['blancco_username']
-            api_password = executeParms['blancco_password']
+        if xml:
 
-            xml = call_blancco_api(api_url, api_user, api_password, executeParms['from_date'], executeParms['to_date'])
-            
-            if xml:
+            xml_data = etree.parse(io.BytesIO(xml.encode('utf-8')))
+            xml_data = reformat_xml(xml_data)
 
-                xml_data = etree.parse(io.BytesIO(xml.encode('utf-8')))
-                xml_data = reformat_xml(xml_data)
+            # Parse each report in XML and create a dataframe from the results
+            reports = []
 
-                # Parse each report in XML and create a dataframe from the results
-                reports = []
-
-                for report in xml_data.xpath('./report'):
-                    for record in parse_report(report):
-                        reports.append(record)
+            for report in xml_data.xpath('./report'):
+                for record in parse_report(report):
+                    reports.append(record)
                 
-                df = pd.DataFrame(reports)
+            df = pd.DataFrame(reports)
+            print(df.head())
 
-                # Results file creation
-                log('Result files write started')
-                write_data_files(df)
-                log('Result files write ended')
+            # Results file creation
+            log('Result files write started')
+            write_data_files(df)
+            log('Result files write ended')
             
-            else:
+        else:
 
-                log('No reports found')
+            log('No reports found')
 
-            write_control_file(executeParms)
-            executeParms = get_parms()
+        write_control_file(executeParms)
+        executeParms = get_parms()
     
     except Exception as ex:
 
