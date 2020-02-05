@@ -7,6 +7,7 @@ import pyodbc
 import requests
 import urllib3
 import sys
+import re
 from lxml import etree
 from lxml import etree as et
 from collections import OrderedDict
@@ -129,7 +130,7 @@ def call_blancco_api(api_url, api_user, api_password, report_date, report_locati
     except Exception as ex:
         raise Exception('Failed API call to Blancco', ex)
 
-def write_data_files(df):
+def clean_data(df):
 
     try:
 
@@ -145,24 +146,88 @@ def write_data_files(df):
             if df[col].dtype == 'object':
                 df[col] = df[col].str[:4000]
 
-        def func(row):
-            
-            xml = ['<?xml version="1.0" encoding="UTF-8" ?>']
-            xml.append('<DATAWIPE>')
-            xml.append('<UNIT>')
-            
-            for field in row.index:
-                xml.append('  <{0}>{1}</{2}>'.format(field, row[field], field))
-            
-            xml.append('</UNIT>')
-            xml.append('</DATAWIPE>')
-            
-            return '\n'.join(xml)
+    except Exception as ex:
+        raise ex
 
-        finalxml = '\n'.join(df.apply(func, axis = 1))
-        f =  open("datawiperesult.xml", "w")
-        f.write(finalxml)
-        f.close()
+
+def write_data_files(df, results_path):
+
+    try:
+
+        for row in df.iterrows():
+
+            # Create XML            
+            DATAWIPE = et.Element('DATAWIPE')
+            UNIT = et.SubElement(DATAWIPE, 'UNIT')
+            SERIAL_NUMBER = et.SubElement(UNIT, 'SERIAL_NUMBER')
+            OPERATOR_NAME = et.SubElement(UNIT, 'OPERATOR_NAME')
+            LOGGED_IN_USER_NAME = et.SubElement(UNIT, 'LOGGED_IN_USER_NAME')
+            TIMESTAMP = et.SubElement(UNIT, 'TIMESTAMP')
+            RESULT = et.SubElement(UNIT, 'RESULT')
+            MESSAGE = et.SubElement(UNIT, 'MESSAGE')
+            SOFTWARE_NAME = et.SubElement(UNIT, 'SOFTWARE_NAME')
+            SOFTWARE_VER = et.SubElement(UNIT, 'SOFTWARE_VER')
+            OEM_NAME = et.SubElement(UNIT, 'OEM_NAME')
+            MODEL_NAME = et.SubElement(UNIT, 'MODEL_NAME')
+            MODEL_REGION_NAME = et.SubElement(UNIT, 'MODEL_REGION_NAME')
+            WORKSTATION_NAME = et.SubElement(UNIT, 'WORKSTATION_NAME')
+            STATION_TABLENAME = et.SubElement(UNIT, 'STATION_TABLENAME')
+            JAILBROKEN = et.SubElement(UNIT, 'JAILBROKEN')
+            LOT_NUMBER = et.SubElement(UNIT, 'LOT_NUMBER')
+            REFERENCE_NUMBER = et.SubElement(UNIT, 'REFERENCE_NUMBER')
+            TRANSACTION_ID = et.SubElement(UNIT, 'TRANSACTION_ID')
+            FMIP_STATUS = et.SubElement(UNIT, 'FMIP_STATUS')
+            COLOR = et.SubElement(UNIT, 'COLOR')
+            CAPACITY = et.SubElement(UNIT, 'CAPACITY')
+            CARRIER = et.SubElement(UNIT, 'CARRIER')
+            CUSTOM_CARRIER = et.SubElement(UNIT, 'CUSTOM_CARRIER')
+            SERIAL_NUMBER2 = et.SubElement(UNIT, 'SERIAL_NUMBER2')
+            PLATFORM = et.SubElement(UNIT, 'PLATFORM')
+            STATUS = et.SubElement(UNIT, 'STATUS')
+            PERFORM_FIRMWARE_CHECK = et.SubElement(UNIT, 'PERFORM_FIRMWARE_CHECK')
+            CARRIER_ALIAS = et.SubElement(UNIT, 'CARRIER_ALIAS')
+            
+            # Populate XML element values
+            wipeserial = str(row[1]['erasure.target.serial']).replace('IMEI:','')
+            
+            if str(row[1]['erasure.state']) == 'Successful':
+                finalresult = 'Pass'
+            else:
+                finalresult ='Fail' 
+
+            SERIAL_NUMBER.text = str(wipeserial)
+            OPERATOR_NAME.text = str('')
+            LOGGED_IN_USER_NAME.text = str('')
+            TIMESTAMP.text = str(row[1]['erasure.start_time'])
+            RESULT.text = str(finalresult)
+            MESSAGE.text = str('')
+            SOFTWARE_NAME.text = str(row[1]['software.operating_system.name'])
+            SOFTWARE_VER.text = str(row[1]['software.operating_system.version'])
+            OEM_NAME.text = str(row[1]['hardware.system.manufacturer'])
+            MODEL_NAME.text = str(row[1]['hardware.system.model'])
+            MODEL_REGION_NAME.text = str(row[1]['hardware.system.internal_model'])
+            WORKSTATION_NAME.text = str('')
+            STATION_TABLENAME.text = str('')
+            JAILBROKEN.text = str('')
+            LOT_NUMBER.text = str('')
+            REFERENCE_NUMBER.text = str('')
+            TRANSACTION_ID.text = str('')
+            FMIP_STATUS.text = str(row[1]['hardware.system.find_my_iphone'])
+            COLOR.text = str(row[1]['hardware.system.device_color'])
+            CAPACITY.text = str(row[1]['erasure.target.capacity'])
+            CARRIER.text = str('')
+            CUSTOM_CARRIER.text = str('')
+            SERIAL_NUMBER2.text = str('')
+            PLATFORM.text = str('')
+            STATUS.text = str(row[1]['erasure.state'])
+            PERFORM_FIRMWARE_CHECK.text = str('')
+            CARRIER_ALIAS.text = str('')
+            
+            resultsxmlstring = et.tostring(DATAWIPE, pretty_print = True, xml_declaration = True)
+            filename = '{}Blancco-DATAWIPE_For Apple Only_{}_{}.xml'.format(results_path, wipeserial, finalresult)
+            f = open(filename, "wb")
+            f.write(resultsxmlstring)
+            f.close()
 
     except Exception as ex:
         raise ex
@@ -216,6 +281,7 @@ def main():
         api_url = executeParms['blancco_url']
         api_user = executeParms['blancco_username']
         api_password = executeParms['blancco_password']
+        results_path = executeParms['results_path']
         report_date = executeParms['report_date']
         report_location = executeParms['report_location']
         report_place = executeParms['report_place']
@@ -239,7 +305,8 @@ def main():
 
             # Results file creation
             log('Result files write started')
-            write_data_files(df)
+            clean_data(df)
+            write_data_files(df, results_path)
             log('Result files write ended')
             
         else:
