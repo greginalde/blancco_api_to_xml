@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<request>
+   <export-report>
+      <report mode="original" />
+      <search path="report.report_date" value="2020-01-20T02:06:13" operator="gt" datatype="date" conjunction="true" />
+      <search path="user_data.fields.r_location" value="ATK" operator="eq" datatype="string" conjunction="true" />
+      <search path="user_data.fields.r_place" value="Shizutani_ATK" operator="eq" datatype="string" conjunction="true" />
+      <reportColumns>
+         <columnPath>report.id</columnPath>
+         <columnPath>report.uuid</columnPath>
+         <columnPath>report.report_date</columnPath>
+         <columnPath>report.product_version</columnPath>
+         <columnPath>user_data.fields.r_process</columnPath>
+         <columnPath>user_data.fields.r_place</columnPath>
+         <columnPath>user_data.fields.r_DAXLINK</columnPath>
+         <columnPath>blancco_data.description.description_entries.company_information.erasure_person</columnPath>
+         <columnPath>user_data.fields.erasure_person</columnPath>
+         <columnPath>user_data.fields.r_workstation</columnPath>
+         <columnPath>blancco_data.blancco_hardware_report.system.esn</columnPath>
+         <columnPath>blancco_data.blancco_hardware_report.system.imei</columnPath>
+         <columnPath>blancco_data.blancco_hardware_report.system.serial</columnPath>
+         <columnPath>blancco_data.blancco_hardware_report.system.manufacturer</columnPath>
+         <columnPath>blancco_data.blancco_hardware_report.system.model</columnPath>
+         <columnPath>blancco_data.blancco_hardware_report.system.market_name</columnPath>
+         <columnPath>blancco_data.blancco_hardware_report.system.device_color</columnPath>
+         <columnPath>blancco_data.blancco_hardware_report.disks.disk.capacity</columnPath>
+         <columnPath>blancco_data.blancco_software_report.operating_system.name</columnPath>
+         <columnPath>blancco_data.blancco_hardware_report.system.find_my_iphone</columnPath>
+         <columnPath>blancco_data.blancco_software_report.operating_system.version</columnPath>
+         <columnPath>blancco_data.blancco_software_report.operating_system.programs.program.name</columnPath>
+         <columnPath>blancco_data.blancco_software_report.operating_system.user_name</columnPath>
+         <columnPath>blancco_data.blancco_erasure_report.erasures.erasure.erasure_standard_name</columnPath>
+         <columnPath>blancco_data.blancco_erasure_report.erasures.erasure.state</columnPath>
+         <columnPath>blancco_data.blancco_erasure_report.erasures.erasure.start_time</columnPath>
+         <columnPath>blancco_data.blancco_erasure_report.erasures.erasure.end_time</columnPath>
+         <columnPath>blancco_data.blancco_erasure_report.erasures.erasure.erasure_details.failure.message</columnPath>
+      </reportColumns>
+      <csv-options csvLanguage="en_US" delimiter="," subDelimiter="#" />
+   </export-report>
+</request>
