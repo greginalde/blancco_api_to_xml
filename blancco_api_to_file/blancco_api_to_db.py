@@ -102,8 +102,8 @@ def call_blancco_api(api_url, api_user, api_password, report_date, report_locati
         xml_request = u"""<?xml version="1.0" encoding="UTF-8"?>
                 <request>
                     <export-report>
-                        <report mode="original" />
-                        <search path="report.report_date" value="{}" operator="gt" datatype="date" conjunction="true" />
+                        <report mode="original"/>
+                        <search path="report.report_date" value="{}" operator="gte" datatype="date" conjunction="true" />
                         <search path="user_data.fields.r_location" value="{}" operator="eq" datatype="string" conjunction="true" />
                         <search path="user_data.fields.r_place" value="{}" operator="eq" datatype="string" conjunction="true" />
                     </export-report>
@@ -120,7 +120,7 @@ def call_blancco_api(api_url, api_user, api_password, report_date, report_locati
             log('Successful response from API')
             return response.text
         else:
-            if response.status_code == 400:
+            if response.text.find('NO REPORTS FOUND') > 0:
                 return None
             else:
                 log('Blancco API Request Status: {}; Message: {}'.format(response.status_code, response.text))
@@ -159,7 +159,7 @@ def write_data_files(df):
             
             return '\n'.join(xml)
 
-        finalxml = '\n'.join(df.apply(func, axis=1))
+        finalxml = '\n'.join(df.apply(func, axis = 1))
         f =  open("datawiperesult.xml", "w")
         f.write(finalxml)
         f.close()
@@ -218,7 +218,7 @@ def main():
         api_password = executeParms['blancco_password']
         report_date = executeParms['report_date']
         report_location = executeParms['report_location']
-        report_place =executeParms['report_place']
+        report_place = executeParms['report_place']
 
         xml = call_blancco_api(api_url, api_user, api_password, report_date, report_location, report_place)
             
