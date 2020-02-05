@@ -4857,3 +4857,6 @@ blancco_api_to_file/.venv/Scripts/python.exe
 blancco_api_to_file/.venv/Scripts/pythonw.exe
 blancco_api_to_file/.venv/Scripts/symilar.exe
 blancco_api_to_file/.vscode/settings.json
+blancco_api_to_file/et_export.py
+blancco_api_to_file/blancco_api_to_db_orig.py
+blancco_api_to_file/blancco_api_to_db_orig.py
