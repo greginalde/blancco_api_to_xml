@@ -1,8 +1,9 @@
 {
-    "from_date": "2020-02-02 12:00:00",
-    "to_date": "2020-02-03 12:00:00",
     "blancco_url": "https://bmc.backoffice.npr.aws.asurion.net/rest-service/report/export/xml",
     "blancco_username": "bo-etl",
     "blancco_password": ")J22qS&uq8%",
-    "results_path": "//WNPPDCCODXI009V/DataWipe/Drop"
+    "results_path": "//WNPPDCCODXI009V/DataWipe/Drop",
+    "report_date": "2020-01-05 12:00:00",
+    "report_location": "ATK",
+    "report_place": "Shizutani_ATK"
 }
