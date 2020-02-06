@@ -141,7 +141,7 @@ def clean_data(df):
         df = df[pd.notnull(df['description.document_id'])].copy()
 
         # Truncate data over 4000 chars
-        truncate_columns = ['user_data.fields.batterycharging', 'user_data.fields.comments', 'user_data.fields.country', 'user_data.fields.device_identifier', 'user_data.fields.erasure_person', 'user_data.fields.imei_2', 'user_data.fields.imei_3', 'user_data.fields.oppo_device_imeicache_1', 'user_data.fields.oppo_device_imeicache_2', 'user_data.fields.persist_sys_show_device_imei_1', 'user_data.fields.persist_sys_updater_imei_1', 'user_data.fields.persist_sys_updater_imei_2', 'user_data.fields.r_counter', 'user_data.fields.r_country', 'user_data.fields.r_erasure', 'user_data.fields.r_esim', 'user_data.fields.r_fmip', 'user_data.fields.r_frp', 'user_data.fields.r_location', 'user_data.fields.r_mdm', 'user_data.fields.r_place', 'user_data.fields.r_process', 'user_data.fields.r_region', 'user_data.fields.r_workstaion', 'user_data.fields.r_workstation', 'user_data.fields.ro_config_hw_imei_sv_enable_1', 'user_data.fields.ro_config_hw_imei_sv_show_two_2', 'user_data.fields.ro_imei_match_status_3', 'user_data.fields.ro_product_imeisv_3', 'user_data.fields.technician_name']
+        truncate_columns = ['user_data.fields.batterycharging', 'user_data.fields.comments', 'user_data.fields.country', 'user_data.fields.device_identifier', 'user_data.fields.imei_2', 'user_data.fields.imei_3', 'user_data.fields.oppo_device_imeicache_1', 'user_data.fields.oppo_device_imeicache_2', 'user_data.fields.persist_sys_show_device_imei_1', 'user_data.fields.persist_sys_updater_imei_1', 'user_data.fields.persist_sys_updater_imei_2', 'user_data.fields.r_counter', 'user_data.fields.r_country', 'user_data.fields.r_erasure', 'user_data.fields.r_esim', 'user_data.fields.r_fmip', 'user_data.fields.r_frp', 'user_data.fields.r_location', 'user_data.fields.r_mdm', 'user_data.fields.r_place', 'user_data.fields.r_process', 'user_data.fields.r_region', 'user_data.fields.r_workstation', 'user_data.fields.ro_config_hw_imei_sv_enable_1', 'user_data.fields.ro_config_hw_imei_sv_show_two_2', 'user_data.fields.ro_imei_match_status_3', 'user_data.fields.ro_product_imeisv_3', 'user_data.fields.technician_name']
         for col in list(set(truncate_columns).intersection(list(df.columns.values))):
             if df[col].dtype == 'object':
                 df[col] = df[col].str[:4000]
@@ -149,6 +149,36 @@ def clean_data(df):
     except Exception as ex:
         raise ex
 
+def export_raw_data(df, results_path):
+
+    try:
+
+        def func(row):
+            
+            xml = ['<?xml version="1.0" encoding="UTF-8" ?>']
+            xml.append('<DATAWIPE>')
+            xml.append('<UNIT>')
+            
+            for field in row.index:
+                xml.append('  <{0}>{1}</{2}>'.format(field, row[field], field))
+            
+            xml.append('</UNIT>')
+            xml.append('</DATAWIPE>')
+            
+            return '\n'.join(xml)
+
+        rawxml = '\n'.join(df.apply(func, axis = 1))
+        
+        now = datetime.now()
+        date_time = now.strftime("%m%d%Y%H%M%S")
+        filename = '{}Blancco-DATAWIPE_For Apple Only_rawExport_{}.xml'.format(results_path, date_time)
+        
+        f = open(filename, "w")
+        f.write(rawxml)
+        f.close()
+
+    except Exception as ex:
+        raise ex
 
 def write_data_files(df, results_path):
 
@@ -218,12 +248,12 @@ def write_data_files(df, results_path):
             CARRIER.text = str('')
             CUSTOM_CARRIER.text = str('')
             SERIAL_NUMBER2.text = str('')
-            PLATFORM.text = str('')
+            PLATFORM.text = str(row[1]['software.operating_system.name'])
             STATUS.text = str(row[1]['erasure.state'])
             PERFORM_FIRMWARE_CHECK.text = str('')
             CARRIER_ALIAS.text = str('')
             
-            resultsxmlstring = et.tostring(DATAWIPE, pretty_print = True, xml_declaration = True)
+            resultsxmlstring = et.tostring(DATAWIPE, pretty_print = True, xml_declaration = True, encoding = 'utf-8')
             filename = '{}Blancco-DATAWIPE_For Apple Only_{}_{}.xml'.format(results_path, wipeserial, finalresult)
             f = open(filename, "wb")
             f.write(resultsxmlstring)
@@ -252,6 +282,7 @@ def get_parms():
     report_date = datetime.strptime(control['report_date'][:19], '%Y-%m-%d %H:%M:%S')
     report_location = control['report_location']
     report_place = control['report_place']
+    old_format = control['use_pervacio_schema']
 
     return {
         'blancco_url': blancco_url,
@@ -260,7 +291,8 @@ def get_parms():
         'results_path': results_path,
         'report_date': report_date,
         'report_location': report_location,
-        'report_place': report_place
+        'report_place': report_place,
+        'old_format': old_format
     }
 
 def get_control_file_path():
@@ -285,7 +317,8 @@ def main():
         report_date = executeParms['report_date']
         report_location = executeParms['report_location']
         report_place = executeParms['report_place']
-
+        old_format = executeParms['old_format']
+        
         xml = call_blancco_api(api_url, api_user, api_password, report_date, report_location, report_place)
             
         if xml:
@@ -306,7 +339,11 @@ def main():
             # Results file creation
             log('Result files write started')
             clean_data(df)
-            write_data_files(df, results_path)
+            
+            if old_format == 'true':
+                write_data_files(df, results_path)
+            else:
+                export_raw_data(df, results_path)
             log('Result files write ended')
             
         else:
